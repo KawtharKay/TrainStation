@@ -8,6 +8,6 @@
         public Guid StationId { get; set; }
         public Station Station { get; set; } = default!;
         public int StopOrder { get; set; }
-        public DateTime DepartureTime { get; set; }
+        public int DistanceFromDeparture { get; set; }
     }
 }
