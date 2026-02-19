@@ -67,6 +67,8 @@ builder.Services.AddScoped<IPassengerRepository, PassengerRepository>();
 builder.Services.AddScoped<IRouteRepository, RouteRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<string>, PasswordHasher<string>>();

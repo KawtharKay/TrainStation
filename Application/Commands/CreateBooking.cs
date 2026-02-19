@@ -20,16 +20,16 @@ namespace Application.Commands
                 var route = await routeRepository.GetAsync(request.RouteId);
                 if (route is null) throw new Exception("Route does not exist");
 
-                var seatAvailable = await bookingRepository.IsSeatAvailable(request.SeatNo);
-                if (!seatAvailable) throw new Exception($"Seat number {request.SeatNo} is not available");
+                //var seatAvailable = await bookingRepository.IsSeatAvailable(request.SeatNo);
+                //if (!seatAvailable) throw new Exception($"Seat number {request.SeatNo} is not available");
 
                 var referenceNo = $"NTS/{DateTime.UtcNow.Year}/00{bookingRepository.GetCount()}";
                 var booking = new Booking
                 {
-                    ReferenceNo = referenceNo,
-                    BookingClass = request.BookingClass,
-                    SeatNo = request.SeatNo,
-                    RouteId = request.RouteId,
+                    //ReferenceNo = referenceNo,
+                    //BookingClass = request.BookingClass,
+                    //SeatNo = request.SeatNo,
+                    //RouteId = request.RouteId,
                     TakeoffStationId = request.TakeOffStationId,
                     DestinationStationId = request.DestinationStationId,
                     PassengerId = request.PassengerId,

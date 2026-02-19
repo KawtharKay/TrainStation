@@ -35,9 +35,9 @@ namespace Infrastructure.Repositories
             return await _context.Bookings.CountAsync();
         }
 
-        public async Task<bool> IsSeatAvailable(int seatNo)
-        {
-            return await _context.Bookings.AnyAsync(x => x.SeatNo == seatNo);
-        }
+        //public async Task<bool> IsSeatAvailable(int seatNo)
+        //{
+        //    return await _context.Bookings.AnyAsync(x => x.SeatNo == seatNo);
+        //}
     }
 }

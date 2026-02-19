@@ -14,6 +14,40 @@ namespace Application.Commands
     public class CreateCoach
     {
         public record CreateCoachCommand(Guid TrainId, string CoachNo, int Capacity, BookingClass BookingClass) : IRequest<BaseResponse<CreateCoachResponse>>;
+        
+        public class CreateCoachHandler(ICoachRepository coachRepository, IUnitOfWork unitOfWork, ICurrentUser currentUser, ISeatRepository seatRepository) : IRequestHandler<CreateCoachCommand, BaseResponse<CreateCoachResponse>>
+        {
+            public async Task<BaseResponse<CreateCoachResponse>> Handle(CreateCoachCommand request, CancellationToken cancellationToken)
+            {
+                var coachExist = await coachRepository.IsExist(request.TrainId, request.CoachNo);
+                if (coachExist) throw new Exception($"{request.CoachNo} already exist");
+                var no = await coachRepository.GetTrainCoachCount(request.TrainId);
+                var coach = new Coach
+                {
+                    TrainId = request.TrainId,
+                    CoachNo = request.CoachNo,
+                    Capacity = request.Capacity,
+                    CoachOrder = no + 1,
+                    BookingClass = request.BookingClass,
+                    CreatedBy = currentUser.GetCurrentUser().ToString()
+                };
+                await coachRepository.AddAsync(coach);
+
+                for(int i = 1; i<=coach.Capacity;i++)
+                {
+                    var seat = new Seat
+                    {
+                        CoachId = coach.Id,
+                        SeatNo = i
+                    };
+                    await seatRepository.AddAsync(seat);
+                }
+                await unitOfWork.SaveAsync();
+                return BaseResponse<CreateCoachResponse>.Success(coach.Adapt<CreateCoachResponse>(), "Coach created successfully");
+            }
+        }
+
+        public record CreateCoachResponse(Guid Id);
         public class CreateCoachCommandValidator : AbstractValidator<CreateCoachCommand>
         {
             public CreateCoachCommandValidator()
@@ -24,50 +58,16 @@ namespace Application.Commands
 
                 RuleFor(x => x.CoachNo)
                     .NotEmpty()
-                    .WithMessage("Coach number is required")
-                    .MaximumLength(50)
-                    .WithMessage("Coach number cannot exceed 50 characters");
+                    .WithMessage("Coach number is required");
 
                 RuleFor(x => x.Capacity)
                     .GreaterThan(0)
-                    .WithMessage("Capacity must be greater than 0")
-                    .LessThanOrEqualTo(60)
-                    .WithMessage("Capacity cannot exceed 60");
+                    .WithMessage("Capacity must be greater than 0");
 
                 RuleFor(x => x.BookingClass)
                     .IsInEnum()
                     .WithMessage("Invalid booking class");
             }
         }
-        public class CreateCoachHandler : IRequestHandler<CreateCoachCommand, BaseResponse<CreateCoachResponse>>
-        {
-            private readonly ICoachRepository _coachRepository;
-            private readonly IUnitOfWork _unitOfWork;
-            private readonly ICurrentUser _currentUser;
-            public CreateCoachHandler(ICoachRepository coachRepository, IUnitOfWork unitOfWork, ICurrentUser currentUser)
-            {
-                _coachRepository = coachRepository;
-                _unitOfWork = unitOfWork;
-                _currentUser = currentUser;
-            }
-            public async Task<BaseResponse<CreateCoachResponse>> Handle(CreateCoachCommand request, CancellationToken cancellationToken)
-            {
-                var coachExist = await _coachRepository.IsExist(request.TrainId, request.CoachNo);
-                if (coachExist) throw new Exception($"{request.CoachNo} already exist");
-                var coach = new Coach
-                {
-                    TrainId = request.TrainId,
-                    CoachNo = request.CoachNo,
-                    Capacity = request.Capacity,
-                    BookingClass = request.BookingClass,
-                    CreatedBy = _currentUser.GetCurrentUser().ToString()
-                };
-                await _coachRepository.AddAsync(coach);
-                await _unitOfWork.SaveAsync();
-                return BaseResponse<CreateCoachResponse>.Success(coach.Adapt<CreateCoachResponse>(), "Coach created successfully");
-            }
-        }
-
-        public record CreateCoachResponse(Guid Id, string CoachNo);
     }
 }

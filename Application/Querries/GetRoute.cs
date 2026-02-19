@@ -19,8 +19,8 @@ namespace Application.Querries
                 var response = await routeRepository.GetAsync(request.Id);
                 if (response is null) throw new Exception("Route does not exist");
 
-                var stationRoutes = response.StationRoutes.Select(a => new StationRouteResponse(a.StationId, a.DepartureTime,a.Station.Name, a.StopOrder)).OrderBy(s => s.StopOrder).ToList();
-                var asd = response.Adapt<GetRouteResponse>() with { Stations = stationRoutes};
+                //var stationRoutes = response.StationRoutes.Select(a => new StationRouteResponse(a.StationId, a.DepartureTime,a.Station.Name, a.StopOrder)).OrderBy(s => s.StopOrder).ToList();
+                var asd = response.Adapt<GetRouteResponse>();
 
                 return BaseResponse<GetRouteResponse>.Success(asd, "Success!");
             }

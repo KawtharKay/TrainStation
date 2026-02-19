@@ -20,11 +20,16 @@ namespace Infrastructure.Authentication
         {
             var signingCridentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecreteKey)), SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, response.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, response.Email),
             };
+
+            foreach (var role in response.Roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var securityToken = new JwtSecurityToken(
                 issuer: _settings.Issuer,

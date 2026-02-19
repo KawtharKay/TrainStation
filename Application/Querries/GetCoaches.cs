@@ -1,12 +1,8 @@
 ﻿using Application.Paging;
 using Application.Repositories;
 using Application.Response;
-using Domain.Entities;
 using Mapster;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Querries
 {
@@ -29,6 +25,6 @@ namespace Application.Querries
                 return BaseResponse<PaginatedList<GetCoachesResponse>>.Success(response.Adapt<PaginatedList<GetCoachesResponse>>(), "Success!");
             }
         }
-        public record GetCoachesResponse(string CoachNo, int Capacity);
+        public record GetCoachesResponse(Guid Id, string CoachNo, int Capacity);
     }
 }

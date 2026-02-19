@@ -9,6 +9,26 @@ namespace Application.Commands
     public class LoginUser
     {
         public record LoginUserCommand(string Email, string Password) : IRequest<LoginUserResponse>;
+        
+        public class LoginUserHandler(IUserRepository userRepository, ITokenService tokenService, IPasswordHasher<string> passwordHasher) : IRequestHandler<LoginUserCommand, LoginUserResponse>
+        {
+            public async Task<LoginUserResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+            {
+                var user = await userRepository.GetAsync(request.Email);
+                if (user is null) throw new Exception("User not found");
+
+                string hashPassword = $"{user.Salt}{request.Password}";
+                var asd = passwordHasher.VerifyHashedPassword("user", user.HashPassword, hashPassword);
+                if(asd == PasswordVerificationResult.Failed) throw new Exception("User not found");
+
+                var roles = user.UserRoles.Select(ur => ur.Role.Name).ToList();
+                var token = tokenService.GenerateToken(new LoginResponse(user.Id, user.Email, roles));
+                return new LoginUserResponse(token);
+            }
+        }
+        public record LoginUserResponse(string Token);
+        public record LoginResponse(Guid Id, string Email, List<string> Roles);
+
         public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
         {
             public LoginUserCommandValidator()
@@ -19,28 +39,8 @@ namespace Application.Commands
 
                 RuleFor(x => x.Password)
                     .NotEmpty()
-                    .WithMessage("Password required")
-                    .MinimumLength(4)
-                    .WithMessage("Password must be at least 4 characters long");
+                    .WithMessage("Password required");
             }
         }
-        public class LoginUserHandler(IUserRepository userRepository, ITokenService tokenService, IPasswordHasher<string> passwordHasher) : IRequestHandler<LoginUserCommand, LoginUserResponse>
-        {
-            public async Task<LoginUserResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
-            {
-                var user = await userRepository.GetAsync(request.Email);
-                if (user is null) throw new Exception("User not found");
-
-                string hashPassword = $"{user.Salt}{request.Password}";
-
-                var asd = passwordHasher.VerifyHashedPassword("user", user.HashPassword, hashPassword);
-                if(asd == PasswordVerificationResult.Failed) throw new Exception("User not found");
-
-                var token = tokenService.GenerateToken(new LoginResponse(user.Id, user.Email));
-                return new LoginUserResponse(token);
-            }
-        }
-        public record LoginUserResponse(string Token);
-        public record LoginResponse(Guid Id, string Email);
     }
 }

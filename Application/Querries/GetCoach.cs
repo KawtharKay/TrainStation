@@ -1,5 +1,6 @@
 ﻿using Application.Repositories;
 using Application.Response;
+using Domain.Entities;
 using Mapster;
 using MediatR;
 using System;
@@ -22,6 +23,7 @@ namespace Application.Querries
             {
                 var response = await _coachRepository.GetAsync(request.id);
                 if (response is null) throw new Exception($"Coach not found");
+
                 return BaseResponse<GetCoachResponse>.Success(response.Adapt<GetCoachResponse>(), "Success!");
             }
         }

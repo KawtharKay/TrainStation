@@ -1,4 +1,5 @@
-﻿using Application.Querries;
+﻿using Application.Contracts.Common;
+using Application.Querries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,7 @@ namespace Host.Controllers
         }
         
         [HttpPost]
+        [Authorize(Roles = AppRoles.SuperAdmin)]
         public async Task<IActionResult> RegisterStation(RegisterStationCommand command)
         {
             var response = await _mediator.Send(command);

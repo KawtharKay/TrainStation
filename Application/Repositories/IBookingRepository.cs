@@ -11,6 +11,6 @@ namespace Application.Repositories
         Task<Booking?> GetAsync(Guid id);
         Task<ICollection<Booking>> GetAll();
         Task<int> GetCount();
-        Task<bool> IsSeatAvailable(int seatNo);
+        //Task<bool> IsSeatAvailable(int seatNo);
     }
 }

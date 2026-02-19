@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Application.Contracts.Common;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace Host.Controllers
             _mediator = mediator;
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRoles.SuperAdmin)]
         [HttpPost]
         public async Task<IActionResult> CreateCoach(CreateCoachCommand command)
         {

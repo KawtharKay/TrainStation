@@ -3,16 +3,13 @@ using Application.Response;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using static Application.Commands.CreateRole;
 
 namespace Application.Commands
 {
     public class CreateRoute
     {
-        public record CreateStationRoute(Guid StationId, int StopOrder, DateTime DepartureTime);
+        public record CreateStationRoute(Guid StationId, int StopOrder,int DistanceFromDeparture, DateTime DepartureTime);
         public record CreateRouteCommand(string Name, List<CreateStationRoute> StationRoutes) : IRequest<BaseResponse<Guid>>;
         public class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
         {
@@ -41,7 +38,7 @@ namespace Application.Commands
                         RouteId = route.Id,
                         StationId = item.StationId,
                         StopOrder = item.StopOrder,
-                        DepartureTime = item.DepartureTime
+                        DistanceFromDeparture = item.DistanceFromDeparture
                     };
 
                     route.StationRoutes.Add(st);

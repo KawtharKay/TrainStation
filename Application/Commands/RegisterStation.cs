@@ -10,23 +10,7 @@ namespace Application.Commands
     public class RegisterStation
     {
         public record RegisterStationCommand(string Name, string City, string State) : IRequest<BaseResponse<RegisterStationResponse>>;
-        public class RegisterStationValidator : AbstractValidator<RegisterStationCommand>
-        {
-            public RegisterStationValidator()
-            {
-                RuleFor(x => x.Name)
-                    .NotEmpty()
-                    .WithMessage("Name is required")
-                    .MinimumLength(3)
-                    .WithMessage("Name must be at least 3 cracters long");
-                RuleFor(x => x.City)
-                    .NotEmpty()
-                    .WithMessage("City must be stated");
-                RuleFor(x => x.State)
-                    .NotEmpty()
-                    .WithMessage("State must be stated");
-            }
-        }
+        
         public class RegisterStationHandler : IRequestHandler<RegisterStationCommand, BaseResponse<RegisterStationResponse>>
         {
             private readonly IStationRepository _stationRepository;
@@ -52,6 +36,21 @@ namespace Application.Commands
             }
         }
 
-        public record RegisterStationResponse(Guid Id, string Name);
+        public record RegisterStationResponse(Guid Id);
+        public class RegisterStationValidator : AbstractValidator<RegisterStationCommand>
+        {
+            public RegisterStationValidator()
+            {
+                RuleFor(x => x.Name)
+                    .NotEmpty()
+                    .WithMessage("Name is required");
+                RuleFor(x => x.City)
+                    .NotEmpty()
+                    .WithMessage("City must be stated");
+                RuleFor(x => x.State)
+                    .NotEmpty()
+                    .WithMessage("State must be stated");
+            }
+        }
     }
 }

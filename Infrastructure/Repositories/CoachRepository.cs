@@ -3,9 +3,7 @@ using Application.Repositories;
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -46,12 +44,27 @@ namespace Infrastructure.Repositories
 
         public async Task<Coach?> GetAsync(Guid id)
         {
-            return await _context.Coaches.FirstOrDefaultAsync(a => a.Id == id);
+            return await _context.Coaches.Include(a => a.Seats).FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task<Coach?> GetAsync(Expression<Func<Coach, bool>> exp)
+        {
+            return await _context.Coaches.FirstOrDefaultAsync(exp);
+        }
+
+        public async Task<int> GetTrainCoachCount(Guid trainId)
+        {
+            return await _context.Coaches.Select(a => a.TrainId == trainId).CountAsync();
         }
 
         public async Task<bool> IsExist(Guid trainId, string coachNo)
         {
-            return await _context.Coaches.AnyAsync(x => x.TrainId == trainId);
+            return await _context.Coaches.AnyAsync(x => x.TrainId == trainId && x.CoachNo == coachNo);
+        }
+
+        public async Task<bool?> IsExist(Expression<Func<Coach, bool>> exp)
+        {
+            return await _context.Coaches.AnyAsync(exp);
         }
     }
 }

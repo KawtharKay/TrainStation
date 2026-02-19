@@ -1,7 +1,8 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static Application.Commands.CreateRole;
+using static Application.Commands.CreateRoles;
+using static Application.Querries.GetRoles;
 
 namespace API.Controllers
 {
@@ -13,6 +14,19 @@ namespace API.Controllers
         public async Task<IActionResult> CreateRole(CreateRoleCommand command)
         {
             var response = await mediator.Send(command);
+            return Ok(response);
+        }
+        [HttpPost("roles")]
+        public async Task<IActionResult> CreateRoles(CreateRolesCommand command)
+        {
+            var response = await mediator.Send(command);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRoles([FromQuery] GetAllRolesQuery query)
+        {
+            var response = await mediator.Send(query);
             return Ok(response);
         }
     }

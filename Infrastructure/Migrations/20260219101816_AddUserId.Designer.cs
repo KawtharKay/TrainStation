@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(TrainStationContext))]
-    [Migration("20260210115458_AdditionOfRoleClass")]
-    partial class AdditionOfRoleClass
+    [Migration("20260219101816_AddUserId")]
+    partial class AddUserId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,8 +31,8 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("BookingClass")
-                        .HasColumnType("int");
+                    b.Property<decimal>("AmountPaid")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -53,16 +53,29 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RouteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("SeatNo")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<Guid>("TakeoffStationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TripSeatId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DestinationStationId");
+
+                    b.HasIndex("PassengerId");
+
+                    b.HasIndex("TakeoffStationId");
+
+                    b.HasIndex("TripId");
+
+                    b.HasIndex("TripSeatId");
 
                     b.ToTable("Bookings");
                 });
@@ -83,6 +96,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CoachOrder")
+                        .HasColumnType("int");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -96,6 +112,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TrainId");
 
                     b.ToTable("Coaches");
                 });
@@ -131,6 +149,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("Wallet")
                         .HasColumnType("decimal(18,2)");
 
@@ -144,15 +165,6 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -185,6 +197,34 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Routes");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Seat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CoachId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SeatNo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CoachId");
+
+                    b.ToTable("Seats");
                 });
 
             modelBuilder.Entity("Domain.Entities.Station", b =>
@@ -225,8 +265,8 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DepartureTime")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("DistanceFromDeparture")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("RouteId")
                         .HasColumnType("uniqueidentifier");
@@ -272,6 +312,75 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Trains");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Trip", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DepartureDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("RouteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TrainId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId");
+
+                    b.HasIndex("TrainId");
+
+                    b.ToTable("Trips");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TripSeat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("SeatId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SeatId");
+
+                    b.HasIndex("TripId");
+
+                    b.ToTable("TripSeats");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -324,7 +433,72 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Booking", b =>
+                {
+                    b.HasOne("Domain.Entities.Station", "DestinationStation")
+                        .WithMany()
+                        .HasForeignKey("DestinationStationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Passenger", "Passenger")
+                        .WithMany("Bookings")
+                        .HasForeignKey("PassengerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Station", "TakeoffStation")
+                        .WithMany()
+                        .HasForeignKey("TakeoffStationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Trip", "Trip")
+                        .WithMany()
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.TripSeat", "TripSeat")
+                        .WithMany()
+                        .HasForeignKey("TripSeatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DestinationStation");
+
+                    b.Navigation("Passenger");
+
+                    b.Navigation("TakeoffStation");
+
+                    b.Navigation("Trip");
+
+                    b.Navigation("TripSeat");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Coach", b =>
+                {
+                    b.HasOne("Domain.Entities.Train", "Train")
+                        .WithMany("Coaches")
+                        .HasForeignKey("TrainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Train");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Seat", b =>
+                {
+                    b.HasOne("Domain.Entities.Coach", "Coach")
+                        .WithMany("Seats")
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Coach");
                 });
 
             modelBuilder.Entity("Domain.Entities.StationRoute", b =>
@@ -346,6 +520,44 @@ namespace Infrastructure.Migrations
                     b.Navigation("Station");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Trip", b =>
+                {
+                    b.HasOne("Domain.Entities.Route", "Route")
+                        .WithMany()
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Train", "Train")
+                        .WithMany()
+                        .HasForeignKey("TrainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Route");
+
+                    b.Navigation("Train");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TripSeat", b =>
+                {
+                    b.HasOne("Domain.Entities.Seat", "Seat")
+                        .WithMany("TripSeats")
+                        .HasForeignKey("SeatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Trip", "Trip")
+                        .WithMany("TripSeats")
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Seat");
+
+                    b.Navigation("Trip");
+                });
+
             modelBuilder.Entity("Domain.Entities.UserRole", b =>
                 {
                     b.HasOne("Domain.Entities.Role", "Role")
@@ -365,6 +577,16 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Coach", b =>
+                {
+                    b.Navigation("Seats");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Passenger", b =>
+                {
+                    b.Navigation("Bookings");
+                });
+
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Navigation("UserRoles");
@@ -375,9 +597,24 @@ namespace Infrastructure.Migrations
                     b.Navigation("StationRoutes");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Seat", b =>
+                {
+                    b.Navigation("TripSeats");
+                });
+
             modelBuilder.Entity("Domain.Entities.Station", b =>
                 {
                     b.Navigation("StationRoutes");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Train", b =>
+                {
+                    b.Navigation("Coaches");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Trip", b =>
+                {
+                    b.Navigation("TripSeats");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
