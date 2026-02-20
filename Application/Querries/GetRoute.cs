@@ -1,11 +1,7 @@
 ﻿using Application.Repositories;
 using Application.Response;
-using Domain.Entities;
 using Mapster;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Querries
 {
@@ -19,7 +15,7 @@ namespace Application.Querries
                 var response = await routeRepository.GetAsync(request.Id);
                 if (response is null) throw new Exception("Route does not exist");
 
-                //var stationRoutes = response.StationRoutes.Select(a => new StationRouteResponse(a.StationId, a.DepartureTime,a.Station.Name, a.StopOrder)).OrderBy(s => s.StopOrder).ToList();
+                var stationRoutes = response.StationRoutes.Select(a => new StationRouteResponse(a.StationId,a.Station.Name, a.StopOrder)).OrderBy(s => s.StopOrder).ToList();
                 var asd = response.Adapt<GetRouteResponse>();
 
                 return BaseResponse<GetRouteResponse>.Success(asd, "Success!");
@@ -27,6 +23,6 @@ namespace Application.Querries
         }
 
         public record GetRouteResponse(Guid Id, string Name, List<StationRouteResponse> Stations);
-        public record StationRouteResponse(Guid StationId, DateTime DepartureTime, string StationName,  int StopOrder);
+        public record StationRouteResponse(Guid StationId, string StationName,  int StopOrder);
     }
 }

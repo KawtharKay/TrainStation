@@ -1,7 +1,4 @@
 ﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Repositories
 {
@@ -9,6 +6,7 @@ namespace Application.Repositories
     {
         Task<bool> IsExist(int seatNo);
         Task AddAsync(Seat seat);
+        Task<Seat?> GetAsync(Guid id);
         Task<ICollection<Seat>> GetAllAsync(Guid coachId);
     }
 }

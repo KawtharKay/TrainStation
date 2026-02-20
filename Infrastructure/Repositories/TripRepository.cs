@@ -22,12 +22,12 @@ namespace Infrastructure.Repositories
 
         public async Task<Trip?> GetAsync(Guid id)
         {
-            return await context.Trips.FirstOrDefaultAsync(x  => x.Id == id);
+            return await context.Trips.Include(a => a.TripSeats).FirstOrDefaultAsync(x  => x.Id == id);
         }
 
-        public async Task<bool> IsExist(Guid id)
+        public async Task<bool> IsExist(Guid trainId, Guid routeId)
         {
-            return await context.Trips.AnyAsync(x => x.Id == id);
+            return await context.Trips.AnyAsync(x => x.TrainId == trainId && x.RouteId == routeId);
         }
     }
 }

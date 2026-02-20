@@ -17,6 +17,11 @@ namespace Infrastructure.Repositories
             return await context.Seats.Where(a => a.CoachId == coachId).OrderBy(a => a.SeatNo).ToListAsync();
         }
 
+        public async Task<Seat?> GetAsync(Guid id)
+        {
+            return await context.Seats.FirstOrDefaultAsync(a => a.Id == id);
+        }
+
         public async Task<bool> IsExist(int seatNo)
         {
             return await context.Seats.AnyAsync(x => x.SeatNo == seatNo);

@@ -7,7 +7,7 @@ namespace Application.Repositories
 {
     public interface ITripRepository
     {
-        Task<bool> IsExist(Guid id);
+        Task<bool> IsExist(Guid trainId, Guid routeId);
         Task AddAsync(Trip trip);
         Task<Trip?> GetAsync(Guid id);
         Task<ICollection<Trip>> GetAllAsync();

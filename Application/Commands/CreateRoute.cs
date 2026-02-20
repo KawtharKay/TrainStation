@@ -11,15 +11,7 @@ namespace Application.Commands
     {
         public record CreateStationRoute(Guid StationId, int StopOrder,int DistanceFromDeparture, DateTime DepartureTime);
         public record CreateRouteCommand(string Name, List<CreateStationRoute> StationRoutes) : IRequest<BaseResponse<Guid>>;
-        public class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
-        {
-            public CreateRoleCommandValidator()
-            {
-                RuleFor(x => x.Name)
-                    .NotEmpty()
-                    .WithMessage("Route name is required");
-            }
-        }
+        
         public class CreateRouteHandler (IRouteRepository routeRepository, IUnitOfWork unitOfWork) : IRequestHandler<CreateRouteCommand, BaseResponse<Guid>>
         {
             public async Task<BaseResponse<Guid>> Handle(CreateRouteCommand request, CancellationToken cancellationToken)
@@ -46,6 +38,16 @@ namespace Application.Commands
                 await routeRepository.AddAsync(route);
                 await unitOfWork.SaveAsync();
                 return BaseResponse<Guid>.Success(route.Id, "Route created successfully!");
+            }
+        }
+
+        public class CreateRouteCommandValidator : AbstractValidator<CreateRouteCommand>
+        {
+            public CreateRouteCommandValidator()
+            {
+                RuleFor(x => x.Name)
+                    .NotEmpty()
+                    .WithMessage("Route name is required");
             }
         }
     }
